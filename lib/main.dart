@@ -1,9 +1,9 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:io' show Platform;
 
 void main() {
   runApp(MyApp());
@@ -17,34 +17,35 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  final String title;
   const MyHomePage({Key? key, required this.title}) : super(key: key);
+  final String title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  static const channel = const MethodChannel('battery_level_channel');
-  static const sensorChannel = const MethodChannel('sensor_channel');
-  static const tempChannel = const EventChannel('temperature_channel');
-  static const pressureChannel = const EventChannel('pressure_channel');
+  static MethodChannel channel = const MethodChannel('battery_level_channel');
+  // static MethodChannel sensorChannel = const MethodChannel('sensor_channel');
+  static EventChannel tempChannel = const EventChannel('temperature_channel');
+  static EventChannel pressureChannel = const EventChannel('pressure_channel');
 
   String _batteryLevel = '';
-  List<Object?> _sensors = [];
+  // List<Object?> _sensors = [];
 
   double _temperature = 0;
   double _pressure = 0;
-  late StreamSubscription subscription;
+  late dynamic subscription;
 
   void _startReading(EventChannel eventChannel) {
-    subscription = eventChannel.receiveBroadcastStream().listen((event) {
+    subscription =
+        eventChannel.receiveBroadcastStream().listen((dynamic event) {
       setState(() {
         if (eventChannel == tempChannel) {
           _temperature = event;
@@ -74,18 +75,18 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+            children: <Widget>[
               MaterialButton(
                 color: Colors.lightBlueAccent,
                 onPressed: _getBatteryLevel,
-                child: Text(
+                child: const Text(
                   'Get Battery Percentage',
                 ),
               ),
               Center(
                 child: Text(
                   'Battery Level is at: $_batteryLevel',
-                  style: TextStyle(fontSize: 16.0, color: Colors.black),
+                  style: const TextStyle(fontSize: 16.0, color: Colors.black),
                 ),
               ),
 
@@ -93,8 +94,8 @@ class _MyHomePageState extends State<MyHomePage> {
               if (Platform.isAndroid)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SizedBox(
+                  children: <Widget>[
+                    const SizedBox(
                       height: 30.0,
                     ),
                     MaterialButton(
@@ -109,13 +110,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     Center(
                       child: Text(
                         '${_temperature.toInt()}°C',
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
+                        style: const TextStyle(
+                            fontSize: 16.0, color: Colors.black),
                       ),
                     ),
                   ],
                 ),
 
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               // Pressure Sensor
@@ -131,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Center(
                 child: Text(
                   '$_pressure',
-                  style: TextStyle(fontSize: 16.0, color: Colors.black),
+                  style: const TextStyle(fontSize: 16.0, color: Colors.black),
                 ),
               ),
             ],
@@ -155,18 +157,19 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Future<void> _getSensorList() async {
-    var sensors;
-
-    try {
-      final result = await sensorChannel.invokeMethod('sensorMethod');
-      sensors = result;
-    } on PlatformException catch (e) {
-      print(e.message);
-    }
-
-    setState(() {
-      _sensors = sensors;
-    });
-  }
+  // Future<void> _getSensorList() async {
+  //   var sensors;
+  //
+  //   try {
+  //     final List<Object?> result =
+  //         await sensorChannel.invokeMethod('sensorMethod');
+  //     sensors = result;
+  //   } on PlatformException catch (e) {
+  //     print(e.message);
+  //   }
+  //
+  //   setState(() {
+  //     _sensors = sensors;
+  //   });
+  // }
 }
